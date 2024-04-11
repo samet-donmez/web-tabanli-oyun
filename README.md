@@ -1,5 +1,5 @@
-# web tabanli oyun
-  yem yeme oyunu
+# Web Tabanlı Oyun
+  Yem yeme oyunu
 # Kullanılan Diller
   Oyunumuzda javascript dilinde canvas kütüphanesi kullanılmıştır . Css'den yardım alınmıştır .
 # Oyun Hakkında
