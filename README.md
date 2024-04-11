@@ -12,6 +12,6 @@
   https://www.w3schools.com/     sitesinden canvas kaynağı incelenmiştir . 
   https://www.youtube.com/watch?v=L07i4g-zhDA     örnek oyun yapımı incelenmiştir . 
 
-
+# Oynanış Videosu
 https://github.com/samet-donmez/web-tabanli-oyun/assets/161874076/e71219ef-fe67-4b20-8c16-4633aaa7f030
 
