@@ -15,3 +15,11 @@
 # Oynanış Videosu
 https://github.com/samet-donmez/web-tabanli-oyun/assets/161874076/e71219ef-fe67-4b20-8c16-4633aaa7f030
 
+# Oyunun Site Linki
+https://sametneni.serv00.net/
+
+# Oyunun Youtube Oynanış Videosu
+https://www.youtube.com/watch?v=TuGE25kPjh4
+
+
+
