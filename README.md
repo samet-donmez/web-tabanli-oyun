@@ -11,15 +11,19 @@
 # Kullanılan Kaynaklar
   https://www.w3schools.com/     sitesinden canvas kaynağı incelenmiştir . 
   https://www.youtube.com/watch?v=L07i4g-zhDA     örnek oyun yapımı incelenmiştir . 
-
-# Oynanış Videosu
-https://github.com/samet-donmez/web-tabanli-oyun/assets/161874076/e71219ef-fe67-4b20-8c16-4633aaa7f030
-
+  
 # Oyunun Site Linki
 https://sametneni.serv00.net/
 
 # Oyunun Youtube Oynanış Videosu
 https://www.youtube.com/watch?v=TuGE25kPjh4
 
+# Oynanış Videosu
+https://github.com/samet-donmez/web-tabanli-oyun/assets/161874076/e71219ef-fe67-4b20-8c16-4633aaa7f030
 
+# Oyundan Görüntüler
+
+![goruntu](https://github.com/samet-donmez/web-tabanli-oyun/assets/161874076/4dc1f7e7-a91d-4a0a-bad5-4faf9faff2c9)
+
+![goruntu_2](https://github.com/samet-donmez/web-tabanli-oyun/assets/161874076/98013036-aa54-4860-b700-8edc5e9e26da)
 
