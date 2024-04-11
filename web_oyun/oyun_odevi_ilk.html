@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<style>
+    body{
+        margin: 0;
+        padding: 0;
+    }
+  /*canvasın arkaplan resmini ve canavsın pozisyonunu ayarlıyoruz.*/
+.cnv{
+        
+    padding: 0;
+    margin-left: 450px;
+    margin-top: 50px;
+    background-image: url('images/arkaplan.jpg');
+    background-size: cover;
+  
+}
+/* tekrar oyna tuşunu ayarlıyoruz.*/
+.playAgain{
+    display: none;/*play again tuşu display none çümkü oyun devam ederken gözüksün istemiyorum. sadece yanarsak gözükür olsun ve o zaman tıklayabilelim. onu da js kodlarında yazdım.*/
+    position: absolute;
+    margin-left: 330px;
+    margin-top: 150px;
+    height: 30px;
+    width: 100px;
+    font-size: 18px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+/*oyun hakkkında bilgi verilen metnin özellikleri.*/
+.aboutGame{
+    position: absolute;
+    width: 300px;
+    height: 700px;
+    margin-left: 10px;
+    margin-top: 0;
+    font-size: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+/*oyun hakkında başlığının özellikleri*/
+.baslik1{
+    margin: 0;
+    padding: 0;
+    margin-left: 10px;
+    }
+    /*tuş atamaları başlığının özellikleri*/
+    .baslik2{
+        position: absolute;
+        margin-top: 340px;
+        margin-left: 10px;
+        padding: 0;
+    }
+    /*tuş atamalarının ilk maddesi*/
+    .tus1{
+        width: 300px;
+        position: absolute;
+        margin-left: 10px;
+        margin-top:380px ;
+        font-size: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }/*tuş atamalarının ikinci maddesi*/
+    .tus2{
+        width: 300px;
+        position: absolute;
+        margin-left: 10px;
+        margin-top:410px ;
+        font-size: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+    /*tuş atamalarının üçüncü maddesi*/
+    .tus3{
+        width: 300px;
+        position: absolute;
+        margin-left: 10px;
+        margin-top:440px ;
+        font-size: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }/*tuş atamalarının dördüncü maddesi*/
+    .tus4{
+        width: 300px; 
+        position: absolute;
+        margin-left: 10px;
+        margin-top:500px ;
+        font-size: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+</style>
+
+<script>
+
+    window.onload = function() {
+        const canvas = document.getElementById("mycanvas");
+        const ctx = canvas.getContext("2d");
+        var isGameOver;//oyunun bitip bitmediğini kontrol eden değişken 1 ise oyun biter.
+        var  me=new Image();//karakterimiz
+        var  yem=new Image();//yemimiz
+        me.src="images/mycharacter.png";
+        yem.src="images/steve.png"
+        var mex=0;//karakterimin x i
+        var mey=0;//karakterimin y si
+        var spaceBasmaHakki=3;//3 kez yemin yerini değiştirme hakkımız var.
+        var eatVoice = new Audio();
+        var overVoice = new Audio();
+        eatVoice.src="voices/eat.mp3";
+        overVoice.src="voices/lazer.mp3";
+        var arkaplan=new Image();
+        arkaplan.src="images/arkaplan.jpg";
+        //bu fonksiyonda yemimizin x pozisyonunu rastgele ayarlıyoruz. 20 ye bölünüyor mu diye kontrol ediyoruz çümkü haritamı 20 pixellik kutucuklar olarak tasarladım.
+        function setstevex() {
+    var x = Math.floor(Math.random() * 580);
+    if (x % 20 == 0) {
+        return x;
+    } else {
+        return setstevex(); 
+    }
+}
+        //bu fonksiyonda yemimizin y pozisyonunu rastgele ayarlıyoruz. 20 ye bölünüyor mu diye kontrol ediyoruz çümkü haritamı 20 pixellik kutucuklar olarak tasarladım.  
+function setstevey() {
+    var y = Math.floor(Math.random() * 580);
+    if (y % 20 == 0) {
+        return y;
+    } else {
+        return setstevey(); 
+    }
+}
+        var stevex = setstevex();//yemin x i
+        var stevey=setstevey();//yemin y si
+        //ilk lazerimizin özelliklerini giriyoruz.
+                lazer1={
+                  xposition:0,
+                  yposition:595,
+                  x:150,
+                  y:5,
+                  hiz:3
+                };
+        //ikinci lazerimizin özelliklerini giriyoruz.
+                lazer2={
+                  xposition:600,
+                  yposition:0,
+                  x:5,
+                  y:200,
+                  hiz:2
+                };
+        //üçüncü lazerimizin özelliklerini giriyoruz.
+                lazer3={
+                  xposition:200,
+                  yposition:250,
+                  x:5,
+                  y:150,
+                  hiz:2
+                };
+        //ekranın sağ üstünde skorumzu gösteren yazı.
+                myscore={
+                    xposition:460,
+                    yposition:40,
+                    mylastscore:0
+                }
+                var oyunZorlugu=1;
+               //burada tuş atamalarını ayarlıyoruz.
+                document.addEventListener("keydown",hareket);
+                function hareket(tus){
+                    //w tuşuna basıldığında karakterimiz yukarı hareket ediyor.
+                  if((tus.code=="KeyW" || tus.code=="ArrowUp") && mey>0){
+                    mey=mey-20; //20 px yukarıya
+                  }
+                  //s tuşuna basıldığında karakterimiz aşağı hareket ediyor.
+                  if((tus.code=="KeyS" || tus.code=="ArrowDown") && mey<580){
+                    mey=mey+20; //20 px aşağıya
+                  }
+                  //a tuşuna basıldığında karakterimiz sola hareket ediyor.
+                  if((tus.code=="KeyA" || tus.code=="ArrowLeft") && mex>0){
+                    mex=mex-20; //20 px sola
+                  }
+                  //d tuşuna basıldığında karakterimiz sağa hareket ediyor.
+                  if((tus.code=="KeyD" || tus.code=="ArrowRight") && mex<580){
+                    mex=mex+20; //20px sağa
+                  }
+                  //space tuşuna basıldığında yemin yerini değiştiriyoruz. Ancak sadece 3 hakkımız var.
+                  if(tus.code=="Space" && spaceBasmaHakki>0){
+                    stevex=setstevex();
+                    stevey=setstevey();
+                    spaceBasmaHakki--;
+                  }
+                  //1 tuşuna basıldığında en kolay zorluk olan zorluk yarlanıyor. lazer hızları en yavaş. 
+                  if(tus.code=="Digit1"){
+                    lazer1.hiz=3;
+                    lazer2.hiz=2;
+                    lazer3.hiz=2;
+                    oyunZorlugu=1;
+                  }
+                  //2 tuşuna basıldığında lazerler biraz daha hızlanıyor. 
+                  if(tus.code=="Digit2"){
+                    lazer1.hiz=4;
+                    lazer2.hiz=3;
+                    lazer3.hiz=3;
+                    oyunZorlugu=2;
+                  }
+                  //3 tuşuna basıldığında lazerler biraz daha hızlanıyor.
+                  if(tus.code=="Digit3"){
+                    lazer1.hiz=5;
+                    lazer2.hiz=4;
+                    lazer3.hiz=4;
+                    oyunZorlugu=3;
+                  }
+                  //4 tuşuna basıldığında lazerler biraz daha hızlanıyor.
+                  if(tus.code=="Digit4"){
+                    lazer1.hiz=6;
+                    lazer2.hiz=5;
+                    lazer3.hiz=5;
+                    oyunZorlugu=4;
+                  }
+                  //5 tuşuna basıldığında en zor olan zorluk ayarlanır ve lazerler en hızlı formunu alır.
+                  if(tus.code=="Digit5"){
+                    lazer1.hiz=7;
+                    lazer2.hiz=6;
+                    lazer3.hiz=6;
+                    oyunZorlugu=5;
+                  }
+                  
+                  }
+                
+              //oyunu yeniden başlamak için play again tuşunu tanımlıyoruz.            
+              var rstButton=document.getElementById("restartButton");  
+
+        function draw(){
+                 //isgameover değiskeni 1 olduğunda Play Again tuşu gözüküyor.
+            if(isGameOver==1){
+                rstButton.style.display="block";
+            }
+                 //isgameover değiskeni 1 olduğunda oyunu bitiriyor.
+            if(isGameOver==1){
+                return;
+            }
+            
+            ctx.globalAlpha = 1;//burada opaklığı 100 de yüz ayarlıyoruz . çünkü sağ üstteki skor yazısı oyuncuyu engellememesi için biraz şeffaflaştırdım.
+            ctx.clearRect(0,0,canvas.width,canvas.height);//her tekrarda önceki aksiyonu temizliyoruz.yapmaz isek tekrara düşüyoruz.
+                ctx.fillStyle="red";//lazerlerin rengini kırmıız ayarlıyoruz.
+                ctx.fillRect(lazer1.xposition,lazer1.yposition,lazer1.x,lazer1.y);//lazer 1 oluşturuldu
+                ctx.fillRect(lazer2.xposition,lazer2.yposition,lazer2.x,lazer2.y);//lazer 2 oluşturuldu
+                ctx.fillRect(lazer3.xposition,lazer3.yposition,lazer3.x,lazer3.y);//lazer 3 oluşturuldu
+            
+                 //lazer 1 belli pixeller arasında yukarı aşağı hareket edecek şekilde ayarlandı. 
+                lazer1.yposition+=lazer1.hiz; 
+                if(lazer1.hiz<1 && lazer1.yposition<=200){
+                    lazer1.hiz= -lazer1.hiz;
+                }
+                else if(lazer1.hiz>0 && lazer1.yposition >=595){
+                    lazer1.hiz= -lazer1.hiz;
+                } 
+
+                 //lazer 2 belli pixeller arasında saşa sola hareket edecek şekilde ayarlandı. 
+                lazer2.xposition+=lazer2.hiz;
+                if(lazer2.hiz<1 && lazer2.xposition<=300){
+                    lazer2.hiz= -lazer2.hiz;
+                }
+                else if(lazer2.hiz>0 && lazer2.xposition >=595){
+                    lazer2.hiz= -lazer2.hiz;
+                }
+
+                 //lazer 3 belli pixeller arasında çapraz hareket edecek şekilde ayarlandı. 
+                lazer3.yposition+=lazer3.hiz;
+                lazer3.xposition+=lazer3.hiz;
+                if(lazer3.hiz<1 && lazer3.xposition<=200 && lazer3.yposition<=250){
+                    lazer3.hiz= -lazer3.hiz;
+                }
+                else if(lazer3.hiz>0 && lazer3.xposition >=300 && lazer3.xposition >=350){
+                    lazer3.hiz= -lazer3.hiz;
+                }
+
+
+                
+                ctx.drawImage(yem,stevex,stevey,20,20);//yem oluşturuldu
+                ctx.drawImage(me,mex,mey,20,20);//bizim karakterimiz oluşturuldu
+                
+                ctx.fillStyle="white"
+                ctx.font = "30px Arial";
+                ctx.globalAlpha = 0.8;
+                ctx.fillText("Oyun Zorluğu:"+oyunZorlugu,10,myscore.yposition);
+                ctx.font = "30px Arial";
+                ctx.globalAlpha = 0.8;//opaklık yuzde 50 olarak ayarlandı çünkü sağ üstte bizi engellemeyecek skor yazısı yazılacak.
+                ctx.fillText("Score:"+myscore.mylastscore,myscore.xposition,myscore.yposition);//skor yazısı yazıldı.
+                play();
+
+                requestAnimationFrame(draw);//fonksiyonu tekrara sokmalıyız ki lazerler hareket etsin ve oyun devam etsin.
+                
+        }  
+        //play again tuşuna basıldığında tüm ayarlar sıfırlanıyor ve draw fonksiyonu tekrar çağırılarak yeni bir sayfa açıyoruz.
+           rstButton.onclick= function(){
+            isGameOver=0;
+            rstButton.style.display="none";
+            mex=0;
+            mey=0;
+            myscore.mylastscore=0;
+            spaceBasmaHakki=3;
+            lazer1.hiz=3;
+            lazer2.hiz=2;
+            lazer3.hiz=2;
+            stevex=setstevex();
+            stevey=setstevey();
+
+            draw();
+           };
+           
+             //play fonksiyonunda karakterimizin nasıl yanacağını ve nasıl skor elde edeceğini ayarlıyoruz.
+        function play(){
+            
+            //burada yemin üstüne geldiğinde skorun artmasını.
+           if(mex==stevex   && mey==stevey){
+            eatVoice.play();
+            myscore.mylastscore++;
+            
+              stevex=setstevex();
+              stevey=setstevey();
+           }
+            //karakterimiz 1. lazere değdiğinde oyun bitiyor ve ekranda game over yazısı çıkarak altında skoru gösteriyor.
+           if((mex>=lazer1.xposition && mex<=lazer1.xposition+150)  && (mey>=lazer1.yposition-19 && mey<=lazer1.yposition+5)){
+            ctx.globalAlpha = 1;
+            ctx.font = "60px Arial";
+            ctx.fillStyle="white";
+            ctx.fillText("GAME OVER",120,250);
+            ctx.fillStyle="red"
+            ctx.font = "30px Arial";
+            ctx.fillText("Score:  "+myscore.mylastscore,240,300);  
+            overVoice.play();
+            oyunZorlugu=1;
+            isGameOver=1;
+            
+           }
+             //karakterimiz 2. lazere değdiğinde oyun bitiyor ve ekranda game over yazısı çıkarak altında skoru gösteriyor.
+           if((mex>=lazer2.xposition-19 && mex<=lazer2.xposition+5)  && (mey>=lazer2.yposition && mey<=lazer2.yposition+200)){
+            ctx.globalAlpha = 1;
+            ctx.font = "60px Arial";
+            ctx.fillStyle="white";
+            ctx.fillText("GAME OVER",120,250);
+            ctx.fillStyle="red" 
+            ctx.font = "30px Arial";
+            ctx.fillText("Score:  "+myscore.mylastscore,240,300);
+            overVoice.play();
+            oyunZorlugu=1;
+            isGameOver=1;
+
+           }
+            //karakterimiz 3. lazere değdiğinde oyun bitiyor ve ekranda game over yazısı çıkarak altında skoru gösteriyor.
+           if((mex>=lazer3.xposition-19 && mex<=lazer3.xposition+5)  && (mey>=lazer3.yposition-19 && mey<=lazer3.yposition+150)){
+            ctx.globalAlpha = 1;
+            ctx.font = "60px Arial";
+            ctx.fillStyle="white";  
+            ctx.fillText("GAME OVER",120,250); 
+            ctx.fillStyle="red"
+            ctx.font = "30px Arial";
+            ctx.fillText("Score:  "+myscore.mylastscore,240,300);
+            overVoice.play();
+            oyunZorlugu=1;
+            isGameOver=1;
+            
+           }
+           
+        }
+
+        draw();
+    };
+</script>
+</head>
+<body>
+    <!-- ekranın solundaki yazılar oluşturuldu ve içine yazıları yazıldı.-->
+    <h1 class="baslik1">Oyun Hakkında</h1>
+    <p class="aboutGame">Oyunumuzda minecrafttaki Creeper karakterini canlandırıyoruz.Oyundaki amacımız yine minecraft oyunundan bildiğimiz steve karakterini yemek ve en yüksek skoru elde etmek.Hareket eden lazerlere dokunursanız oyun bitiyor ve skorunuz ekranda yazıyor.Aynı zamanda yandığınızda solda Play Again tuşu beliriyor. Bu tuşa bastığınızda her şey sıfırlanıyor ve oyun yeniden başlıyor.</p>
+    <h1 class="baslik2">Tuş Atamaları</h1>
+    <p class="tus1">"W,A,S,D" : karakter hareketi.</p>
+    <p class="tus2">"Yön Tuşları" : karakter hareketi.</p>
+    <p class="tus3">"space" : yemin yerini değiştirme (3 kez kullanılabilir).</p>
+    <p class="tus4">"1,2,3,4,5" : oyun zorluğu (1 en kolay , 5 en zor) lazerlerin hızı değişiyor. </p>
+    <!--play again tuşu oluşturuldu.-->
+    <button class="playAgain" id="restartButton" >Play Again</button>
+    <!-- canvas oluşturuldu.-->
+    <canvas class="cnv" id="mycanvas" height="600px" width="600px">
+  
+    </canvas>
+   
+</body>
+</html>
